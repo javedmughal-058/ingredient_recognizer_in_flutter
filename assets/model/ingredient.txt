@@ -1,0 +1,102 @@
+apple
+oranges
+mangoes
+pineapples
+milk
+eggs
+flour
+beef
+ketchup
+water
+water
+wing
+fries
+plate
+ice cream
+burger
+cheeseburger
+mashed potato
+potato
+mushroom
+strawberry
+orange
+lemon
+fig
+pineapple
+banana
+jackfruit
+custard apple
+pomegranate
+hay
+carbonara
+chocolate sauce
+dough
+meat loaf
+pizza
+potpie
+burrito
+red wine
+cup
+bubble
+coral fungus
+carrots
+broccoli
+spinach
+tomatoes
+cucumbers
+potatoes
+onions
+bell peppers
+chicken
+beef
+pork
+lamb
+turkey
+duck
+Salmon
+shrimp
+tuna
+cod
+crab
+lobster
+rice
+wheat
+oats
+barley
+quinoa
+millet
+cheese
+yogurt
+butter
+cream
+salt
+pepper
+basil
+cumin
+coriander
+paprika
+ketchup
+mustard
+mayonnaise
+soy sauce
+olive oil
+sugar
+honey
+maple syrup
+agave nectar
+flour
+baking powder
+yeast
+cocoa powder
+water
+coffee
+tea
+tea
+soda
+juice
+wine
+beer
+canned beans
+pasta
+cereal
+canned tomatoes
