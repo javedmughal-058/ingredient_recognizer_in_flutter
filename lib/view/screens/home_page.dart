@@ -35,6 +35,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return SafeArea(
       child: Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: SizedBox(
           height: size.height,
           width: size.width,

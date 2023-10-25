@@ -14,12 +14,12 @@ class ButtonWidget extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: size.width * 0.15,
+        height: size.width * 0.13,
         width: size.width,
         padding: EdgeInsets.all(Helper.padding / 4),
         decoration: BoxDecoration(
           color: bgColor ?? Theme.of(context).secondaryHeaderColor,
-          borderRadius: BorderRadius.circular(12)
+          borderRadius: BorderRadius.circular(8)
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,

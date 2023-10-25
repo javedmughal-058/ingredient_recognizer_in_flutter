@@ -36,6 +36,7 @@ class MyApp extends StatelessWidget {
         secondaryHeaderColor: const Color.fromRGBO(150, 148, 255, 1),
         primaryColor: const Color.fromRGBO(44, 61, 122, 1),
         cardColor: const Color.fromRGBO(255, 121, 118, 1),
+        scaffoldBackgroundColor: Colors.white,
         useMaterial3: true,
       ),
       home: const BottomBar(),
