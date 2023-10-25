@@ -68,9 +68,9 @@ class _BottomBarState extends State<BottomBar> {
             controller: FloatingBottomBarController(initialIndex: baseController.currentIndex.value),
             bottomBar: [
               BottomBarItem(
-                icon: Icon(Icons.home_outlined, color: const Color(0xff9E9E9E), size: size.width * 0.08),
-                iconSelected: Icon(Icons.home_outlined, color: Theme.of(context).cardColor, size: size.width * 0.08),
-                title: 'Home',
+                icon: Icon(Icons.account_balance, color: const Color(0xff9E9E9E), size: size.width * 0.08),
+                iconSelected: Icon(Icons.account_balance, color: Theme.of(context).cardColor, size: size.width * 0.08),
+                // title: 'Home',
                 titleStyle: Theme.of(context).textTheme.bodySmall,
                 dotColor: Theme.of(context).cardColor,
                 onTap: (value) {
@@ -81,7 +81,7 @@ class _BottomBarState extends State<BottomBar> {
               BottomBarItem(
                 icon: Icon(Icons.person_2_outlined, color: const Color(0xff9E9E9E), size: size.width * 0.08),
                 iconSelected: Icon(Icons.person_2_outlined, color: Theme.of(context).cardColor, size: size.width * 0.08),
-                title: 'Profile',
+                // title: 'Profile',
                 titleStyle: Theme.of(context).textTheme.bodySmall,
                 dotColor: Theme.of(context).cardColor,
                 onTap: (value) {

@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:ingredient_recognizer_in_flutter/controller/base_controller.dart';
 import 'package:ingredient_recognizer_in_flutter/controller/permission_controller.dart';
 import 'package:ingredient_recognizer_in_flutter/view/screens/bottom_bar.dart';
-import 'package:ingredient_recognizer_in_flutter/view/screens/home_page.dart';
 
 void main() {
   runApp(const MyApp());
