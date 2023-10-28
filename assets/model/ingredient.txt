@@ -3,7 +3,7 @@ oranges
 mangoes
 pineapples
 milk
-eggs
+egg
 flour
 beef
 ketchup
@@ -33,6 +33,9 @@ chocolate sauce
 dough
 meat loaf
 pizza
+sandwich
+shawarma
+blueberrie
 potpie
 burrito
 red wine

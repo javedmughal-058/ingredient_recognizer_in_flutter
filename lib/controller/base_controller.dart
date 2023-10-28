@@ -25,22 +25,23 @@ class BaseController extends GetxController {
   RecognitionResponse? responseText;
   var recognizeText = "".obs;
   var numberOfLine = 0.obs;
-  late TextEditingController textController;
+  // late TextEditingController textController;
 
   //Object Recognition
   var listOfObject = <String>[].obs;
   var ingredientsList = <String>[].obs;
+  var ingredientsListText = <String>[].obs;
 
   @override
   void onInit() {
     super.onInit();
-    textController = TextEditingController();
+    // textController = TextEditingController();
     loadModel();
   }
 
   @override
   void onClose() {
-    textController.dispose();
+    // textController.dispose();
     super.onClose();
   }
 
@@ -52,7 +53,7 @@ class BaseController extends GetxController {
       ingredientsList.clear();
       ingredientNotFound.value = false;
       recognizeText.value = "";
-      textController.text = "";
+      // textController.text = "";
       image.value = File(file.path);
       await cropImage();
     } else {
@@ -101,11 +102,39 @@ class BaseController extends GetxController {
     late ITextRecognizer recognizer = MLKitTextRecognizer();
     recognizeText.value = await recognizer.processImage(image.value!.path);
     numberOfLine.value = (recognizeText.value.length / 25).ceil();
-    textController.text = recognizeText.value;
+    // textController.text = recognizeText.value;
     // responseText = RecognitionResponse(imgPath: image.value!.path, recognizedText: recognizeText.value);
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 500), () async {
       if (recognizeText.value == "") {
         errorMessage.value = "No Text Found, Try different Image";
+      }
+      else{
+        var ingredientsListFromFile = await readLabelsFromAsset();
+        // debugPrint("File data $ingredientsListFromFile");
+        var splitList = recognizeText.value.split(' ').toList();
+
+        ///Remove following symbols
+        var symbolFreeList = splitList.map((word) {
+          return word.replaceAll(RegExp(r'[,.:!@#$%^&*()_+=/\\-]'), '');
+        }).toList();
+
+        var ingredientFindList = <String>[];
+
+        debugPrint("Symbol free $symbolFreeList");
+        ///Remove Duplicate Strings
+        for(int i = 0; i<symbolFreeList.length; i++){
+          if (symbolFreeList[i].endsWith('s')) {
+            symbolFreeList[i] = symbolFreeList[i].substring(0, symbolFreeList[i].length - 1); // Remove the 's' at the end
+          }
+          if(!ingredientFindList.contains(symbolFreeList[i].toLowerCase())){
+            ingredientFindList.add(symbolFreeList[i].toLowerCase());
+          }
+        }
+
+        debugPrint("Duplicate free Text $ingredientFindList");
+        ingredientsListText.value = filterIngredients(
+            listFromFile: ingredientsListFromFile, ingredientFind: ingredientFindList);
+        debugPrint("Filter Text $ingredientsListText");
       }
     });
   }
@@ -129,14 +158,14 @@ class BaseController extends GetxController {
         for (var result in detector) {
           listOfObject.add(result["label"].toString());
         }
-        debugPrint("result..... $listOfObject");
+        debugPrint("object result..... $listOfObject");
         Future.delayed(const Duration(seconds: 1), () async {
           var ingredientsListFromFile = await readLabelsFromAsset();
           // debugPrint("File data $ingredientsListFromFile");
-          debugPrint("detect $listOfObject");
-          var list = filterIngredients(ingredientsListFromFile);
+          debugPrint("object detect $listOfObject");
+          ingredientsList.value = filterIngredients(listFromFile: ingredientsListFromFile, ingredientFind: listOfObject);
           // debugPrint("Final $list");
-          if (list.isNotEmpty) {
+          if (ingredientsList.isNotEmpty) {
             ingredientNotFound.value = false;
           } else {
             ingredientNotFound.value = true;
@@ -173,9 +202,11 @@ class BaseController extends GetxController {
     return labels;
   }
 
-  List<String> filterIngredients(List<String> ingredientsListFromFile) {
-    return ingredientsList.value = listOfObject.where((item) {
-      return ingredientsListFromFile.contains(item);
+  List<String> filterIngredients({required List<String> listFromFile, required List<String> ingredientFind}) {
+    return ingredientFind.where((item) {
+      return listFromFile.contains(item);
     }).toList();
   }
+
+
 }

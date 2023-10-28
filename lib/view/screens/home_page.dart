@@ -107,33 +107,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     commonSize,
                     Obx(() => baseController.recognizeText.value == ""
                         ? const SizedBox()
-                        : Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Recognized Text',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium),
-                              CustomTextField(
-                                contentPadding: const EdgeInsets.symmetric(
-                                    vertical: 5.0, horizontal: 10.0),
-                                controller: baseController.textController,
-                                isReadOnly: false,
-                                maxLines: baseController.numberOfLine.value,
-                                textInputType: TextInputType.text,
-                                borderRadius: 5,
-                                borderColor: Colors.transparent,
-                                isFilled: true,
-                                fillColor: Theme.of(context)
-                                    .secondaryHeaderColor
-                                    .withOpacity(0.1),
-                              ),
-                            ],
-                          )),
+                        : buildIngredientCard(context,
+                        title: 'Recognized Ingredients From Text',
+                        ingredientsList: baseController.ingredientsListText)),
                     commonSize,
                     Obx(() => Text(baseController.errorMessage.value,
                         style: Theme.of(context).textTheme.bodyMedium)),
                     commonSize,
-                    buildIngredientCard(context),
+                    buildIngredientCard(context,
+                        title: 'Recognized Ingredients',
+                        ingredientsList: baseController.ingredientsList),
                     commonSize,
                   ],
                 ),
