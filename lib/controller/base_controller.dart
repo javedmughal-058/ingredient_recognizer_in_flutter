@@ -1,7 +1,7 @@
+import 'dart:ffi';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_tflite/flutter_tflite.dart';
 import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -9,10 +9,8 @@ import 'package:ingredient_recognizer_in_flutter/services/text_recognizer/mlKit_
 import 'package:ingredient_recognizer_in_flutter/services/text_recognizer/text_recognizer.dart';
 import 'package:ingredient_recognizer_in_flutter/services/text_recognizer/text_recognizer_response.dart';
 import 'package:ingredient_recognizer_in_flutter/utils/constant/helper.dart';
-import 'package:ingredient_recognizer_in_flutter/utils/loader/custom_loader.dart';
 
 class BaseController extends GetxController {
-
   var currentIndex = 0.obs;
 
   var image = Rx<File?>(null);
@@ -20,12 +18,14 @@ class BaseController extends GetxController {
   var loadingMsg = "".obs;
   var isLoading = false.obs;
   var ingredientNotFound = false.obs;
+  var isFinalButtonShow = false.obs;
+  var finalResult = "".obs;
 
   //Text Recognition
   RecognitionResponse? responseText;
   var recognizeText = "".obs;
   var numberOfLine = 0.obs;
-  // late TextEditingController textController;
+  late TextEditingController textController;
 
   //Object Recognition
   var listOfObject = <String>[].obs;
@@ -35,14 +35,7 @@ class BaseController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    // textController = TextEditingController();
-    loadModel();
-  }
-
-  @override
-  void onClose() {
-    // textController.dispose();
-    super.onClose();
+    textController = TextEditingController();
   }
 
   getPhoto(BuildContext context, ImageSource source) async {
@@ -91,11 +84,15 @@ class BaseController extends GetxController {
     if (croppedImage != null) {
       // debugPrint("Image Cropped");
       image.value = File(croppedImage.path);
+      isFinalButtonShow.value = false;
+      finalResult.value = "";
     }
   }
 
   Future<void> processingOnImage(context) async {
+    finalResult.value = "";
     ingredientNotFound.value = false;
+    isFinalButtonShow.value = false;
     isLoading.value = true;
     loadingMsg.value = "Recognizing Text...!";
     debugPrint("Loading $loadingMsg");
@@ -104,92 +101,64 @@ class BaseController extends GetxController {
     numberOfLine.value = (recognizeText.value.length / 25).ceil();
     // textController.text = recognizeText.value;
     // responseText = RecognitionResponse(imgPath: image.value!.path, recognizedText: recognizeText.value);
-    Future.delayed(const Duration(milliseconds: 500), () async {
+    Future.delayed(const Duration(milliseconds: 0), () async {
       if (recognizeText.value == "") {
         errorMessage.value = "No Text Found, Try different Image";
       }
-      else{
-        var ingredientsListFromFile = await readLabelsFromAsset();
-        // debugPrint("File data $ingredientsListFromFile");
-        var splitList = recognizeText.value.split(' ').toList();
-
-        ///Remove following symbols
-        var symbolFreeList = splitList.map((word) {
-          return word.replaceAll(RegExp(r'[,.:!@#$%^&*()_+=/\\-]'), '');
-        }).toList();
-
-        var ingredientFindList = <String>[];
-
-        debugPrint("Symbol free $symbolFreeList");
-        ///Remove Duplicate Strings
-        for(int i = 0; i<symbolFreeList.length; i++){
-          if (symbolFreeList[i].endsWith('s')) {
-            symbolFreeList[i] = symbolFreeList[i].substring(0, symbolFreeList[i].length - 1); // Remove the 's' at the end
+      else {
+        var splitResponse = recognizeText.value.split('.').first;
+        do {
+          if (splitResponse.contains('ingredients')) {
+            splitResponse = splitResponse.split('ingredients').last.trim();
           }
-          if(!ingredientFindList.contains(symbolFreeList[i].toLowerCase())){
-            ingredientFindList.add(symbolFreeList[i].toLowerCase());
+          else if (splitResponse.contains('ingredient')) {
+            splitResponse = splitResponse.split('ingredient').last.trim();
           }
-        }
+          else if (splitResponse.contains('Ingredient')) {
+            splitResponse = splitResponse.split('Ingredient').last.trim();
+          }
+          else if (splitResponse.contains('Ingredients')) {
+            splitResponse = splitResponse.split('Ingredients').last.trim();
+          }
+        } while (splitResponse.contains('ingredients') ||
+            splitResponse.contains('ingredient') ||
+            splitResponse.contains('Ingredients') ||
+            splitResponse.contains('Ingredient'));
 
-        debugPrint("Duplicate free Text $ingredientFindList");
-        ingredientsListText.value = filterIngredients(
-            listFromFile: ingredientsListFromFile, ingredientFind: ingredientFindList);
-        debugPrint("Filter Text $ingredientsListText");
+        debugPrint("New $splitResponse");
+        textController.text = splitResponse;
       }
+
+      ///old working
+      // else{
+      //   var ingredientsListFromFile = await readLabelsFromAsset();
+      //   // debugPrint("File data $ingredientsListFromFile");
+      //   var splitList = recognizeText.value.split(' ').toList();
+      //
+      //   ///Remove following symbols
+      //   var symbolFreeList = splitList.map((word) {
+      //     return word.replaceAll(RegExp(r'[,.:!@#$%^&*()_+=/\\-]'), '');
+      //   }).toList();
+      //
+      //   var ingredientFindList = <String>[];
+      //
+      //   debugPrint("Symbol free $symbolFreeList");
+      //   ///Remove Duplicate Strings
+      //   for(int i = 0; i<symbolFreeList.length; i++){
+      //     if (symbolFreeList[i].endsWith('s')) {
+      //       symbolFreeList[i] = symbolFreeList[i].substring(0, symbolFreeList[i].length - 1); // Remove the 's' at the end
+      //     }
+      //     if(!ingredientFindList.contains(symbolFreeList[i].toLowerCase())){
+      //       ingredientFindList.add(symbolFreeList[i].toLowerCase());
+      //     }
+      //   }
+      //
+      //   debugPrint("Duplicate free Text $ingredientFindList");
+      //   ingredientsListText.value = filterIngredients(
+      //       listFromFile: ingredientsListFromFile, ingredientFind: ingredientFindList);
+      //   debugPrint("Filter Text $ingredientsListText");
+      // }
     });
-  }
-
-  //object recognizer using Tflite
-  Future<void> objectDetector() async {
-    loadingMsg.value = "Recognizing Ingredient...!";
-    try {
-      var detector = await Tflite.runModelOnImage(
-          path: image.value!.path,   // required
-          imageMean: 0.0,   // defaults to 117.0
-          imageStd: 255.0,  // defaults to 1.0
-          numResults: 2,    // defaults to 5
-          threshold: 0.2,   // defaults to 0.1
-          asynch: true      // defaults to true
-      );
-      if (detector != null) {
-        debugPrint("idr........!");
-        listOfObject.clear();
-        // if(detectedObjects["confidence"]*100 > 45){
-        for (var result in detector) {
-          listOfObject.add(result["label"].toString());
-        }
-        debugPrint("object result..... $listOfObject");
-        Future.delayed(const Duration(seconds: 1), () async {
-          var ingredientsListFromFile = await readLabelsFromAsset();
-          // debugPrint("File data $ingredientsListFromFile");
-          debugPrint("object detect $listOfObject");
-          ingredientsList.value = filterIngredients(listFromFile: ingredientsListFromFile, ingredientFind: listOfObject);
-          // debugPrint("Final $list");
-          if (ingredientsList.isNotEmpty) {
-            ingredientNotFound.value = false;
-          } else {
-            ingredientNotFound.value = true;
-          }
-          CustomLoader().hideLoader();
-        });
-      }
-      else{
-        CustomLoader().hideLoader();
-      }
-    } catch (e) {
-      CustomLoader().hideLoader();
-      debugPrint("Error $e");
-    }
-  }
-
-  void loadModel() async {
-    var response = await Tflite.loadModel(
-        model: 'assets/model/model.tflite',
-        labels: 'assets/model/label.txt',
-        isAsset: true,
-        numThreads: 1,
-        useGpuDelegate: false);
-    debugPrint("Loading model $response");
   }
 
   Future<List<String>> readLabelsFromAsset() async {
@@ -202,11 +171,16 @@ class BaseController extends GetxController {
     return labels;
   }
 
-  List<String> filterIngredients({required List<String> listFromFile, required List<String> ingredientFind}) {
+  List<String> filterIngredients(
+      {required List<String> listFromFile,
+      required List<String> ingredientFind}) {
     return ingredientFind.where((item) {
       return listFromFile.contains(item);
     }).toList();
   }
 
-
+  void makeFinalResult(){
+    isFinalButtonShow.value = false;
+    finalResult.value = textController.text;
+  }
 }
