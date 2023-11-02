@@ -9,7 +9,6 @@ import 'package:ingredient_recognizer_in_flutter/utils/custom_widgets/custom_tex
 import 'package:ingredient_recognizer_in_flutter/utils/custom_widgets/positioned_widget.dart';
 import 'package:ingredient_recognizer_in_flutter/utils/loader/custom_loader.dart';
 import 'package:ingredient_recognizer_in_flutter/view/widgets/image_card.dart';
-import 'package:ingredient_recognizer_in_flutter/view/widgets/ingredient_card.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
@@ -57,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         CustomCardButton(
                             radius: 12,
-                            title: "Camera",
                             width: size.width * 0.15,
                             height: size.width * 0.15,
                             bgColor: Theme.of(context).cardColor,
@@ -68,7 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
                             }),
                         CustomCardButton(
                             radius: 12,
-                            title: "Gallery",
                             width: size.width * 0.15,
                             height: size.width * 0.15,
                             bgColor: Theme.of(context).secondaryHeaderColor,
@@ -90,10 +87,10 @@ class _MyHomePageState extends State<MyHomePage> {
                             baseController
                                 .processingOnImage(context)
                                 .then((_) async {
-                              await baseController.objectDetector();
-                              // loader.hideLoader();
+                              loader.hideLoader();
                             });
-                          } else {
+                          }
+                          else {
                             Helper.showErrorAlert(context,
                                 msg: "Select Image First");
                           }
@@ -104,20 +101,40 @@ class _MyHomePageState extends State<MyHomePage> {
                         bgColor: baseController.image.value == null
                             ? Colors.grey.shade300
                             : null)),
-                    commonSize,
+
                     Obx(() => baseController.recognizeText.value == ""
                         ? const SizedBox()
-                        : buildIngredientCard(context,
-                        title: 'Recognized Ingredients From Text',
-                        ingredientsList: baseController.ingredientsListText)),
-                    commonSize,
+                        : Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            commonSize,
+                            Text('Recognized Ingredients', style: Theme.of(context).textTheme.titleMedium),
+                            const SizedBox(height: 5),
+                            CustomTextField(
+                              onChanged: (value){
+                                baseController.isFinalButtonShow.value = true;
+                                baseController.finalResult.value = "";
+                              },
+                              innerTextStyle: Theme.of(context).textTheme.bodySmall,
+                              borderColor: Theme.of(context).cardColor,
+                              fillColor: Theme.of(context).secondaryHeaderColor,
+                              isFilled: true,
+                              controller: baseController.textController,
+                              textInputType: TextInputType.text, isReadOnly: false),
+                          ],
+                        )),
+
                     Obx(() => Text(baseController.errorMessage.value,
                         style: Theme.of(context).textTheme.bodyMedium)),
-                    commonSize,
-                    buildIngredientCard(context,
-                        title: 'Recognized Ingredients',
-                        ingredientsList: baseController.ingredientsList),
-                    commonSize,
+                    Obx(() => baseController.isFinalButtonShow.value
+                        ? ButtonWidget(
+                        onTap: () => baseController.makeFinalResult(),
+                        icon: Icons.done_all_outlined,
+                        title: 'Final Result',
+                        size: size)
+                        : const SizedBox()),
+                    Obx(() => Text(baseController.finalResult.value,
+                        style: Theme.of(context).textTheme.titleSmall)),
                   ],
                 ),
               ),

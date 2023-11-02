@@ -40,7 +40,6 @@ dependencies:
   image_cropper: ^5.0.0
   google_mlkit_text_recognition:
   permission_handler: ^11.0.1
-  flutter_tflite: ^1.0.1
   floating_bottom_bar: ^0.0.2
 
 dev_dependencies:

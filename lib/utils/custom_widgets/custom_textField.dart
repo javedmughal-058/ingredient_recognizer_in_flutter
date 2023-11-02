@@ -16,6 +16,7 @@ class CustomTextField extends StatelessWidget {
   final Color borderColor;
   final EdgeInsetsGeometry? contentPadding;
   final TextStyle? labelStyle;
+  final TextStyle? innerTextStyle;
 
   const CustomTextField({Key? key,
     this.controller,
@@ -25,7 +26,7 @@ class CustomTextField extends StatelessWidget {
     this.borderRadius = 5,
     this.fillColor,this.isFilled,
     this.onChanged,this.validator,this.borderColor = Colors.black26,
-    this.contentPadding, this.labelStyle, }) : super(key: key);
+    this.contentPadding, this.labelStyle, this.innerTextStyle, }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -36,8 +37,9 @@ class CustomTextField extends StatelessWidget {
       onChanged: onChanged,
       keyboardType: textInputType,
       readOnly: isReadOnly,
+      cursorColor: Colors.white,
       maxLines: maxLines,
-      style:  Theme.of(context).textTheme.labelLarge,
+      style:  innerTextStyle,
       decoration: InputDecoration(
         errorStyle: Theme.of(context).textTheme.labelLarge,
         hintStyle: Theme.of(context).textTheme.labelLarge,

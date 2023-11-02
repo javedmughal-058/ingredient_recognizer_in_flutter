@@ -31,6 +31,8 @@ class MyApp extends StatelessWidget {
                 fontFamily: 'Poppins', fontSize: 12, fontWeight: FontWeight.normal),
           bodyLarge: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
               fontFamily: 'Poppins', fontSize: 16, fontWeight: FontWeight.normal),
+          bodySmall: TextStyle(color: Color.fromRGBO(255, 255, 255, 1),
+              fontFamily: 'Poppins', fontSize: 12, fontWeight: FontWeight.normal),
         ),
         secondaryHeaderColor: const Color.fromRGBO(150, 148, 255, 1),
         primaryColor: const Color.fromRGBO(44, 61, 122, 1),
