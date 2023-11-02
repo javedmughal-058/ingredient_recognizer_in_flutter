@@ -102,10 +102,10 @@ class BaseController extends GetxController {
     // textController.text = recognizeText.value;
     // responseText = RecognitionResponse(imgPath: image.value!.path, recognizedText: recognizeText.value);
     Future.delayed(const Duration(milliseconds: 0), () async {
-      if (recognizeText.value == "") {
-        errorMessage.value = "No Text Found, Try different Image";
-      }
-      else {
+      if (recognizeText.value != "" && recognizeText.value.contains('ingredients') ||
+          recognizeText.value.contains('ingredient') ||
+          recognizeText.value.contains('Ingredients') ||
+          recognizeText.value.contains('Ingredient')) {
         var splitResponse = recognizeText.value.split('.').first;
         do {
           if (splitResponse.contains('ingredients')) {
@@ -120,13 +120,18 @@ class BaseController extends GetxController {
           else if (splitResponse.contains('Ingredients')) {
             splitResponse = splitResponse.split('Ingredients').last.trim();
           }
-        } while (splitResponse.contains('ingredients') ||
+        }
+        while (splitResponse.contains('ingredients') ||
             splitResponse.contains('ingredient') ||
             splitResponse.contains('Ingredients') ||
             splitResponse.contains('Ingredient'));
 
         debugPrint("New $splitResponse");
         textController.text = splitResponse;
+      }
+      else{
+        recognizeText.value = "";
+        errorMessage.value = "No Ingredients Found, Try different Image";
       }
 
       ///old working
